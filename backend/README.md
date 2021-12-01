@@ -1,73 +1,52 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is the code for a REST API I made for a college project.
+
+## Technology stack
+
+The API was written in TypeScript and is powered by the framework NestJS.
+
+For this project the relational database PostgreSQL was the one chosen.
+It was tricky to add an arbitrary sorting order to rows without having to update a lot of rows at the same time.
+The solution I found was to use a column with unspecified precision and scale on the DB side and an arbitrary floating-point library on the application side.
+This way, only one of the two nearest neighbor rows of target position (or the parent board when no rows are available) has to be locked. Although the target position can't be guaranteed due to other rows not being locked, there's no risk of constraint violations, and it's faster than updating many values every time a position changes.
 
 ## Installation
 
-```bash
-$ npm install
-```
+1. Set up the database:
+	Although MikroORM is compatible with many SQL databases, this app was meant to be used and only tested with PostgreSQL, and some raw SQL code was used as well. But feel free to test it with other databases.
 
-## Running the app
+2. Load tables into DB:
+	When the database is ready, navigate to the folder *src* and edit the file *mikro-orm.config.ts* with your connection credentials.
+	After editing the credentials, it's time to load the entity tables into the db. Thankfully MikroORM provides a cli tool that does that. To do it, go to the root directory of the project (the parent of the src folder), and run the following commands in the terminal:
+	```bash
+	npm i @mikro-orm/cli
+	npx mikro-orm schema:create -d
+	```
+	or, if you prefer not to install it:
+	```bash
+	npx -p @mikro-orm/cli schema:create -d
+	```
+	This command will just dump the generated code into the terminal.
+	If this command dumps SQL code into your terminal, then you're all set to proceed. Otherwise you should check your config for errors and if you're lost you can check MikroORM's docs entry on [setting up the commandline](https://mikro-orm.io/docs/installation#setting-up-the-commandline-tool).
 
-```bash
-# development
-$ npm run start
+	After setting up your cli tool, you're ready to load the tables into the db. To do so, run the following command:
+	```bash
+	npx mikro-orm schema:create -r
+	```
 
-# watch mode
-$ npm run start:dev
+3. Start the app:
+	If everything goes well, you should see a success feedback message, which means the app is ready to be started.
+	To start it, run the following command:
+	```bash
+	npm start
+	```
+	To compile the code, run:
+	```bash
+	npm run build 
+	```
 
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+4. Next steps:
+	After successfully running the application, you can start using it.
+	Thanks to NestJS, the API has an interactive documentation and playground available online, on path '/api'.
